@@ -142,6 +142,8 @@ function renderProducts(list){
   list.forEach(p=>{
     div.innerHTML+=`
       <div class="card">
+        <video src="${p.video}" autoplay loop muted playsinline
+          style="width:100%;border-radius:12px;margin-bottom:10px;"></video>
         <h3>${p.name}</h3>
         <div class="price">${p.price}€</div>
         <button onclick="add('${p.name}',${p.price})">Ajouter</button>
