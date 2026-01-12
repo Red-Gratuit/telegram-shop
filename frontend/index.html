@@ -1,72 +1,132 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Telegram Shop</title>
+<meta charset="UTF-8">
+<title>Telegram Shop</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Telegram SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0e1621;
+  color:white;
+}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0e1621;
-      color: white;
-      text-align: center;
-      padding: 40px;
-    }
+header {
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  background:#17212b;
+}
 
-    h1 {
-      margin-bottom: 10px;
-    }
+.products {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:12px;
+}
 
-    #user {
-      margin-bottom: 20px;
-      font-size: 18px;
-    }
+.card {
+  background:#1f2c3b;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,.3);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
 
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      border: none;
-      background: #2ea6ff;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+.card h3 {
+  margin:0;
+  font-size:16px;
+}
+
+.price {
+  font-size:18px;
+  margin:10px 0;
+}
+
+.card button {
+  background:#2ea6ff;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  color:white;
+  font-size:16px;
+}
+
+.cart {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#17212b;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.cart button {
+  background:#00c853;
+  border:none;
+  padding:10px 20px;
+  color:white;
+  border-radius:8px;
+  font-size:16px;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>🛒 Mon Shop</h1>
-  <div id="user">Chargement...</div>
-  <button onclick="loadProducts()">Se connecter</button>
+<header>🛒 Mon Shop</header>
+<div class="products" id="products"></div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+<div class="cart">
+  <div>Total: <span id="total">0</span>€</div>
+  <button onclick="checkout()">Commander</button>
+</div>
 
-    const user = tg.initDataUnsafe.user;
-    document.getElementById("user").innerText =
-      user ? "Bienvenue " + user.first_name : "Utilisateur inconnu";
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-    async function loadProducts() {
-      try {
-        const res = await fetch("https://telegram-shop-production.up.railway.app/api/products");
-        const products = await res.json();
+let cart = [];
+let total = 0;
 
-        let text = "🛒 Produits disponibles:\n\n";
-        products.forEach(p => {
-          text += `${p.name} - ${p.price}€\n`;
-        });
+async function loadProducts(){
+  const res = await fetch("https://telegram-shop-production.up.railway.app/api/products");
+  const products = await res.json();
 
-        alert(text);
-      } catch (e) {
-        alert("Erreur de connexion au serveur");
-      }
-    }
-  </script>
+  const div = document.getElementById("products");
+  div.innerHTML = "";
+
+  products.forEach(p=>{
+    div.innerHTML += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <div class="price">${p.price}€</div>
+        <button onclick="add(${p.id}, '${p.name}', ${p.price})">Ajouter</button>
+      </div>
+    `;
+  });
+}
+
+function add(id,name,price){
+  cart.push({id,name,price});
+  total += price;
+  document.getElementById("total").innerText = total.toFixed(2);
+  tg.HapticFeedback.impactOccurred("light");
+}
+
+function checkout(){
+  alert("Commande: " + cart.length + " articles\nTotal: " + total + "€");
+}
+
+loadProducts();
+</script>
 
 </body>
 </html>
