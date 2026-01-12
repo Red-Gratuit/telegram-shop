@@ -216,7 +216,13 @@ function checkout(){
 
 function openInfo(p){
   document.getElementById("infoTitle").innerText = p.name;
-  document.getElementById("infoText").innerText = p.description || "Aucune description.";
+
+  // Convertir les retours à la ligne en <br>
+  const text = (p.description || "Aucune description.")
+                .replace(/\n/g, "<br>");
+
+  document.getElementById("infoText").innerHTML = text;
+
   document.getElementById("overlay").style.display = "flex";
 }
 
