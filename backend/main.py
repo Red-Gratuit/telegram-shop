@@ -10,6 +10,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+stup_ids = [1,2,3,4,5,6,7,9,10,12,13,14,17]
+
 products = [
     # PUFF (5 photos)
     {"id": 1, "name": "Puff 1", "price": 10, "category": "Puff",
@@ -22,18 +24,26 @@ products = [
      "image": "https://telegram-shop-93m.pages.dev/img/puff4.jpg"},
     {"id": 5, "name": "Puff 5", "price": 14, "category": "Puff",
      "image": "https://telegram-shop-93m.pages.dev/img/puff5.jpg"},
-
-    # STUP (17 vidéos – branding/fictif)
-    *[
-        {"id": 100+i, "name": f"Stup {i+1}", "price": 20+i, "category": "Stup",
-         "video": f"https://telegram-shop-93m.pages.dev/videos/stup{i+1}.mp4"}
-        for i in range(17)
-    ],
-
-    # TABAC (1 vidéo)
-    {"id": 300, "name": "Tabac", "price": 8, "category": "Tabac",
-     "video": "https://telegram-shop-93m.pages.dev/videos/tabac1.mp4"},
 ]
+
+# Ajouter les Stup sélectionnés
+for i in stup_ids:
+    products.append({
+        "id": 100 + i,
+        "name": f"Stup {i}",
+        "price": 20 + i,
+        "category": "Stup",
+        "video": f"https://telegram-shop-93m.pages.dev/videos/stup{i}.mp4"
+    })
+
+# Tabac (1 vidéo)
+products.append({
+    "id": 300,
+    "name": "Tabac",
+    "price": 8,
+    "category": "Tabac",
+    "video": "https://telegram-shop-93m.pages.dev/videos/tabac1.mp4"
+})
 
 @app.get("/api/ping")
 def ping():
