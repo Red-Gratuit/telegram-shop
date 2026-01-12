@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Le Professeur 59-62</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-*{box-sizing:border-box;font-family:Arial;}
-body{
-  margin:0;
-  background:#0b0f14;
-  color:white;
+body{margin:0;background:#0b0f14;color:white;font-family:Arial;}
+header{background:#111827;text-align:center;padding:15px;}
+header img{width:120px;border-radius:50%;border:3px solid #2ea6ff;}
+.categories{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  overflow-x:auto;
 }
-header{
-  background:#111827;
-  padding:15px;
-  text-align:center;
+.cat{
+  background:#1f2937;
+  padding:8px 15px;
+  border-radius:20px;
+  white-space:nowrap;
+  cursor:pointer;
 }
-header img{
-  width:120px;
-  border-radius:50%;
-  border:3px solid #2ea6ff;
+.cat.active{
+  background:#2ea6ff;
 }
 .products{
   display:grid;
@@ -32,50 +35,22 @@ header img{
   background:#1f2937;
   border-radius:15px;
   padding:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-  transition:.2s;
 }
-.card:hover{
-  transform:scale(1.03);
-}
-.card h3{
-  margin:0;
-  font-size:16px;
-}
-.price{
-  font-size:20px;
-  color:#2ea6ff;
-  margin:10px 0;
-}
+.price{color:#2ea6ff;font-size:18px;}
 .card button{
-  background:#2ea6ff;
-  border:none;
-  border-radius:8px;
-  padding:10px;
-  color:white;
-  font-size:16px;
+  background:#2ea6ff;border:none;padding:10px;border-radius:8px;color:white;
 }
 .cart{
   position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#111827;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  box-shadow:0 -5px 20px rgba(0,0,0,.7);
+  bottom:0;left:0;right:0;
+  background:#111827;padding:15px;
+  display:flex;justify-content:space-between;
 }
 .cart button{
-  background:#00e676;
-  border:none;
-  padding:12px 25px;
-  border-radius:8px;
-  font-size:16px;
+  background:#00e676;border:none;padding:12px 25px;border-radius:8px;color:black;
 }
 </style>
 </head>
@@ -86,6 +61,7 @@ header img{
   <img src="https://telegram-shop-93m.pages.dev/logo.png">
 </header>
 
+<div class="categories" id="categories"></div>
 <div class="products" id="products"></div>
 
 <div class="cart">
@@ -94,18 +70,39 @@ header img{
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+const api = "https://telegram-shop-production.up.railway.app";
 
-let cart = [];
-let total = 0;
+let allProducts=[];
+let cart=[];
+let total=0;
 
-async function loadProducts(){
-  const res = await fetch("https://telegram-shop-production.up.railway.app/api/products");
-  const products = await res.json();
-  const div = document.getElementById("products");
+async function load(){
+  const cats = await fetch(api+"/api/categories").then(r=>r.json());
+  const prods = await fetch(api+"/api/products").then(r=>r.json());
+  allProducts=prods;
+  renderCats(cats);
+  renderProducts(prods);
+}
+
+function renderCats(cats){
+  const div=document.getElementById("categories");
+  div.innerHTML='<div class="cat active" onclick="filter(null,this)">Tous</div>';
+  cats.forEach(c=>{
+    div.innerHTML+=`<div class="cat" onclick="filter('${c}',this)">${c}</div>`;
+  });
+}
+
+function filter(cat,el){
+  document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  if(!cat) renderProducts(allProducts);
+  else renderProducts(allProducts.filter(p=>p.category==cat));
+}
+
+function renderProducts(list){
+  const div=document.getElementById("products");
   div.innerHTML="";
-  products.forEach(p=>{
+  list.forEach(p=>{
     div.innerHTML+=`
       <div class="card">
         <h3>${p.name}</h3>
@@ -120,14 +117,13 @@ function add(name,price){
   cart.push({name,price});
   total+=price;
   document.getElementById("total").innerText=total.toFixed(2);
-  tg.HapticFeedback.impactOccurred("medium");
 }
 
 function checkout(){
-  alert("Commande: "+cart.length+" articles\nTotal: "+total+"€");
+  alert("Commande: "+cart.length+" produits\nTotal: "+total+"€");
 }
 
-loadProducts();
+load();
 </script>
 
 </body>
