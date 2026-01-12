@@ -5,47 +5,25 @@
   <title>Telegram Shop</title>
 
   <!-- SDK Telegram -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-  <style>
-    body {
-      font-family: Arial;
-      background: #0e1621;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
+const user = tg.initDataUnsafe.user;
+document.getElementById("user").innerText =
+  user ? "Bienvenue " + user.first_name : "Utilisateur inconnu";
 
-    button {
-      padding: 15px 25px;
-      font-size: 18px;
-      border-radius: 8px;
-      border: none;
-      background: #2ea6ff;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
+async function sendUser() {
+  const res = await fetch("https://telegram-shop-production.up.railway.app/api/products");
+  const products = await res.json();
 
-<h1>🛒 Mon Shop</h1>
-<p id="user">Chargement…</p>
+  let html = "🛒 Produits disponibles:\n\n";
+  products.forEach(p => {
+    html += p.name + " - " + p.price + "€\n";
+  });
 
-<button onclick="sendUser()">Se connecter</button>
-
-<script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
-
-  const user = tg.initDataUnsafe.user;
-
-  document.getElementById("user").innerText =
-    user ? "Bienvenue " + user.first_name : "Utilisateur inconnu";
-
-  function sendUser() {
-    alert("Ton ID Telegram est: " + user.id);
-  }
+  alert(html);
+}
 </script>
 
 </body>
