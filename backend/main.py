@@ -11,12 +11,16 @@ app.add_middleware(
 )
 
 products = [
-    {"id": 1, "name": "Pack Starter", "price": 15, "category": "Packs"},
-    {"id": 2, "name": "Résine Premium", "price": 25, "category": "Résine"},
-    {"id": 3, "name": "Recharge 10ml", "price": 10, "category": "Recharges"},
-    {"id": 4, "name": "Recharge 30ml", "price": 20, "category": "Recharges"},
-    {"id": 5, "name": "Accessoire Pro", "price": 12, "category": "Accessoires"},
+    {"id": 1, "name": "Stup Alpha", "price": 20, "category": "Stup"},
+    {"id": 2, "name": "Stup Pro", "price": 30, "category": "Stup"},
+
+    {"id": 3, "name": "Puff Fraise", "price": 10, "category": "Puff"},
+    {"id": 4, "name": "Puff Mangue", "price": 12, "category": "Puff"},
+
+    {"id": 5, "name": "Tabac Blond", "price": 8, "category": "Tabac"},
+    {"id": 6, "name": "Tabac Brun", "price": 9, "category": "Tabac"},
 ]
+
 
 @app.get("/api/ping")
 def ping():
@@ -28,5 +32,5 @@ def get_products():
 
 @app.get("/api/categories")
 def get_categories():
-    cats = sorted(set(p["category"] for p in products))
+    return ["Stup","Puff","Tabac"]
     return cats
