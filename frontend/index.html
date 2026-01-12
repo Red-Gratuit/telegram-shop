@@ -137,16 +137,20 @@ function filter(cat,el){
 }
 
 function renderProducts(list){
-  const div=document.getElementById("products");
-  div.innerHTML="";
+  const div = document.getElementById("products");
+  div.innerHTML = "";
   list.forEach(p=>{
-    div.innerHTML+=`
+    const media = p.video
+      ? `<video src="${p.video}" autoplay loop muted playsinline
+           style="width:100%;border-radius:12px;margin-bottom:10px;"></video>`
+      : `<img src="${p.image}" style="width:100%;border-radius:12px;margin-bottom:10px;">`;
+
+    div.innerHTML += `
       <div class="card">
-        <video src="${p.video}" autoplay loop muted playsinline
-          style="width:100%;border-radius:12px;margin-bottom:10px;"></video>
+        ${media}
         <h3>${p.name}</h3>
         <div class="price">${p.price}€</div>
-        <button onclick="add('${p.name}',${p.price})">Ajouter</button>
+        <button onclick="add('${p.name}', ${p.price})">Ajouter</button>
       </div>
     `;
   });
