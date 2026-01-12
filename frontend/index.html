@@ -91,8 +91,54 @@ header img{
   border-radius:10px;
   font-weight:bold;
 }
+.infoBtn{
+  margin-top:8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:10px;
+  padding:8px;
+  color:white;
+  cursor:pointer;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(10px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+
+.panel{
+  background:#0b0f14;
+  border-radius:18px;
+  padding:20px;
+  width:90%;
+  max-height:80%;
+  overflow:auto;
+  box-shadow:0 0 40px #2ea6ff;
+}
+
+.close{
+  float:right;
+  background:#2ea6ff;
+  border:none;
+  border-radius:8px;
+  padding:8px 12px;
+  cursor:pointer;
+}
 </style>
 </head>
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <button class="close" onclick="closeInfo()">Fermer</button>
+    <h2 id="infoTitle"></h2>
+    <p id="infoText"></p>
+  </div>
+</div>
 
 <body>
 
@@ -151,6 +197,7 @@ function renderProducts(list){
         <h3>${p.name}</h3>
         <div class="price">${p.price}€</div>
         <button onclick="add('${p.name}', ${p.price})">Ajouter</button>
+        <button class="infoBtn" onclick='openInfo(${JSON.stringify(p)})'>Info</button>
       </div>
     `;
   });
@@ -165,6 +212,16 @@ function add(name,price){
 
 function checkout(){
   alert("Commande: "+cart.length+" articles\nTotal: "+total+"€");
+}
+
+function openInfo(p){
+  document.getElementById("infoTitle").innerText = p.name;
+  document.getElementById("infoText").innerText = p.description || "Aucune description.";
+  document.getElementById("overlay").style.display = "flex";
+}
+
+function closeInfo(){
+  document.getElementById("overlay").style.display = "none";
 }
 
 load();
