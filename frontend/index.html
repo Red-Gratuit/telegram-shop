@@ -6,9 +6,21 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-body{margin:0;background:#0b0f14;color:white;font-family:Arial;}
-header{background:#111827;text-align:center;padding:15px;}
-header img{width:120px;border-radius:50%;border:3px solid #2ea6ff;}
+*{box-sizing:border-box;font-family:Arial;}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#0f172a,#020617);
+  color:white;
+}
+header{
+  text-align:center;
+  padding:20px;
+}
+header img{
+  width:110px;
+  border-radius:50%;
+  box-shadow:0 0 20px #2ea6ff;
+}
 .categories{
   display:flex;
   gap:10px;
@@ -16,14 +28,17 @@ header img{width:120px;border-radius:50%;border:3px solid #2ea6ff;}
   overflow-x:auto;
 }
 .cat{
-  background:#1f2937;
-  padding:8px 15px;
-  border-radius:20px;
-  white-space:nowrap;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.1);
+  padding:8px 18px;
+  border-radius:30px;
   cursor:pointer;
+  transition:.2s;
 }
 .cat.active{
   background:#2ea6ff;
+  box-shadow:0 0 15px #2ea6ff;
 }
 .products{
   display:grid;
@@ -32,25 +47,49 @@ header img{width:120px;border-radius:50%;border:3px solid #2ea6ff;}
   padding:15px;
 }
 .card{
-  background:#1f2937;
-  border-radius:15px;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(15px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;
   padding:15px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
+  box-shadow:0 10px 40px rgba(0,0,0,.8);
+  transition:.2s;
 }
-.price{color:#2ea6ff;font-size:18px;}
+.card:hover{
+  transform:scale(1.04);
+  box-shadow:0 0 30px #2ea6ff;
+}
+.price{
+  color:#2ea6ff;
+  font-size:20px;
+  margin:10px 0;
+}
 .card button{
-  background:#2ea6ff;border:none;padding:10px;border-radius:8px;color:white;
+  background:linear-gradient(45deg,#2ea6ff,#00e5ff);
+  border:none;
+  border-radius:10px;
+  padding:10px;
+  color:black;
+  font-weight:bold;
 }
 .cart{
   position:fixed;
-  bottom:0;left:0;right:0;
-  background:#111827;padding:15px;
-  display:flex;justify-content:space-between;
+  bottom:0;
+  left:0;
+  right:0;
+  background:rgba(15,23,42,.9);
+  backdrop-filter:blur(20px);
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  box-shadow:0 -5px 40px rgba(0,0,0,.9);
 }
 .cart button{
-  background:#00e676;border:none;padding:12px 25px;border-radius:8px;color:black;
+  background:linear-gradient(45deg,#00e676,#1aff00);
+  border:none;
+  padding:12px 30px;
+  border-radius:10px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -70,15 +109,14 @@ header img{width:120px;border-radius:50%;border:3px solid #2ea6ff;}
 </div>
 
 <script>
-const api = "https://telegram-shop-production.up.railway.app";
-
+const api="https://telegram-shop-production.up.railway.app";
 let allProducts=[];
 let cart=[];
 let total=0;
 
 async function load(){
-  const cats = await fetch(api+"/api/categories").then(r=>r.json());
-  const prods = await fetch(api+"/api/products").then(r=>r.json());
+  const cats=await fetch(api+"/api/categories").then(r=>r.json());
+  const prods=await fetch(api+"/api/products").then(r=>r.json());
   allProducts=prods;
   renderCats(cats);
   renderProducts(prods);
@@ -93,10 +131,9 @@ function renderCats(cats){
 }
 
 function filter(cat,el){
-  document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-  if(!cat) renderProducts(allProducts);
-  else renderProducts(allProducts.filter(p=>p.category==cat));
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
+  renderProducts(cat?allProducts.filter(p=>p.category==cat):allProducts);
 }
 
 function renderProducts(list){
@@ -117,10 +154,11 @@ function add(name,price){
   cart.push({name,price});
   total+=price;
   document.getElementById("total").innerText=total.toFixed(2);
+  Telegram.WebApp.HapticFeedback.impactOccurred("medium");
 }
 
 function checkout(){
-  alert("Commande: "+cart.length+" produits\nTotal: "+total+"€");
+  alert("Commande: "+cart.length+" articles\nTotal: "+total+"€");
 }
 
 load();
