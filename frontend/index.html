@@ -130,6 +130,55 @@ header img{
   padding:8px 12px;
   cursor:pointer;
 }
+
+/* === INFO PAGE PREMIUM === */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,15,.85);
+  backdrop-filter:blur(15px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+}
+
+.panel{
+  width:90%;
+  max-height:85%;
+  background:linear-gradient(180deg,#0b1220,#020617);
+  border-radius:24px;
+  padding:20px;
+  overflow:auto;
+  box-shadow:0 0 50px #2ea6ff;
+  animation: slideUp .4s ease;
+}
+
+@keyframes slideUp{
+  from{transform:translateY(40px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.panel h2{
+  margin-top:0;
+  color:#2ea6ff;
+}
+
+.close{
+  float:right;
+  background:linear-gradient(45deg,#2ea6ff,#00e5ff);
+  border:none;
+  border-radius:10px;
+  padding:8px 14px;
+  font-weight:bold;
+}
+
+.infoText{
+  white-space:pre-line;
+  line-height:1.6;
+  margin-top:15px;
+  color:#dbeafe;
+}
 </style>
 </head>
 <div class="overlay" id="overlay">
@@ -137,6 +186,13 @@ header img{
     <button class="close" onclick="closeInfo()">Fermer</button>
     <h2 id="infoTitle"></h2>
     <p id="infoText"></p>
+  </div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <button class="close" onclick="closeInfo()">← Retour</button>
+    <h2 id="infoTitle"></h2>
+    <div id="infoText" class="infoText"></div>
   </div>
 </div>
 
@@ -217,12 +273,11 @@ function checkout(){
 function openInfo(p){
   document.getElementById("infoTitle").innerText = p.name;
 
-  // Convertir les retours à la ligne en <br>
-  const text = (p.description || "Aucune description.")
-                .replace(/\n/g, "<br>");
+  // convertir les retours ligne en HTML
+  const text = (p.description || "")
+    .replace(/\n/g,"<br>");
 
   document.getElementById("infoText").innerHTML = text;
-
   document.getElementById("overlay").style.display = "flex";
 }
 
