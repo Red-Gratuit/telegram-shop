@@ -99,46 +99,41 @@ QUANTITÉS DISPO :
     4: "Stup 4 – Effet long et profond.",
     5: """🇺🇸 CALI US PREMIUM SHELF 🇺🇸
 
-✅ VARIÉTÉS
 • GELATO 33 🍦
 
-🔥 Une cali unique et spectaculaire.
-La GELATO 33 est un mélange de bonbon et de notes boisées.
-Un vrai régal pour les papilles.
+Une variété premium aux notes sucrées et boisées.
+Un vrai plaisir pour les connaisseurs.
 
-DISPO :
-10G 🇺🇸 25G 🇺🇸 50G 🇺🇸 100G 🇺🇸 200G 🇺🇸 500G 🇺🇸 1K + PV
+DISPONIBLE :
+10G 🇺🇸 25G 🇺🇸 50G 🇺🇸 100G 🇺🇸 200G 🇺🇸 500G 🇺🇸 1K
 
-⭕️ PRIX EN PV ⭕️
+⭕️ PRIX SUR DEMANDE ⭕️
 """,
     6: "Stup 6 – Mélange spécial.",
     7: "Stup 7 – Version intense.",
     9: "Stup 9 – Ultra premium.",
     10: """🇺🇸 🍯 PIATELLA UNCLE’S FARM 🍯 🇺🇸
 
-🇺🇸 De la folie à tous les niveaux.
 Ce PIATELLA importé tout droit des USA vous fera voyager.
 
-QUANTITÉS DISPO :
+DISPONIBLE :
 1G 🍯 3G 🍯 5G 🍯 10G 🍯 25G 🍯 50G 🍯 100G 🍯
 
-⭕️ PRIX EN PV ⭕️
+⭕️ PRIX SUR DEMANDE ⭕️
 """,
     12: "Stup 12 – Très fort.",
     13: "Stup 13 – Effet stable.",
     14: """🍫 STATICSIFT 🍫
 
-✅ VARIÉTÉS
 • PINEAPPLE 🍍
 
-🔥 Un STATICSIFT de folie.
-Terps bien développés, encore glassy, du très lourd.
+Terps bien développés, texture glassy, qualité premium.
 
-QUANTITÉS DISPO :
-10G 🍍 25G 🍍 50G 🍍 100G 🍍 200G 🍍 500G 🍍 1K 🍍 +PV
+DISPONIBLE :
+10G 🍍 25G 🍍 50G 🍍 100G 🍍 200G 🍍 500G 🍍 1K 🍍
 
-⭕️ PRIX EN PV ⭕️
-"""
+⭕️ PRIX SUR DEMANDE ⭕️
+""",
     17: "Stup 17 – Version ultime."
 }
 
