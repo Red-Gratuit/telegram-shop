@@ -180,9 +180,20 @@ header img{
    TELEGRAM iOS SAFE INIT
 ================================ */
 const tg = window.Telegram.WebApp;
+
 tg.ready();
 tg.expand();
 tg.enableClosingConfirmation();
+
+function waitTelegramReady(){
+  return new Promise(resolve=>{
+    if(tg.initData && tg.initData.length > 0){
+      resolve();
+    }else{
+      setTimeout(()=>waitTelegramReady().then(resolve), 100);
+    }
+  });
+}
 
 /* ===============================
    API
@@ -265,7 +276,7 @@ function closeInfo(){
   document.getElementById("overlay").style.display = "none";
 }
 
-load();
+waitTelegramReady().then(load);
 </script>
 
 </body>

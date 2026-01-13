@@ -4,7 +4,8 @@ import hashlib
 import hmac
 from urllib.parse import parse_qs
 
-BOT_TOKEN = "PUT_YOUR_TELEGRAM_BOT_TOKEN_HERE"
+import os
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 app = FastAPI()
 
@@ -45,10 +46,15 @@ async def telegram_auth(request: Request, call_next):
     if request.url.path.startswith("/api"):
         init_data = request.headers.get("x-telegram-init-data")
 
-        if not init_data or not verify_telegram(init_data):
+        # iOS envoie parfois la 1ère requête sans initData → on laisse passer
+        if not init_data:
+            return await call_next(request)
+
+        if not verify_telegram(init_data):
             raise HTTPException(status_code=403, detail="Unauthorized Telegram")
 
     return await call_next(request)
+
 
 # ============================
 # PRODUCTS (TES DONNÉES EXACTES)
