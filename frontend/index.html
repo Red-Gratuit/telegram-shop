@@ -149,6 +149,28 @@ header img{
   margin-top:15px;
   color:#dbeafe;
 }
+
+/* iPhone Telegram boost */
+body.ios {
+  zoom: 1.15;
+}
+
+body.ios .card button,
+body.ios .infoBtn {
+  padding: 14px !important;
+  font-size: 16px !important;
+  border-radius: 14px !important;
+}
+
+body.ios .price {
+  font-size: 22px !important;
+}
+
+body.ios .cat {
+  padding: 12px 22px !important;
+  font-size: 15px !important;
+}
+
 </style>
 </head>
 
@@ -180,6 +202,9 @@ header img{
    TELEGRAM iOS SAFE INIT
 ================================ */
 const tg = window.Telegram.WebApp;
+if(tg.platform === "ios"){
+  document.body.classList.add("ios");
+}
 
 tg.ready();
 tg.expand();
