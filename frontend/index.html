@@ -250,9 +250,15 @@ body.ios .cart button{
    TELEGRAM iOS SAFE INIT
 ================================ */
 const tg = window.Telegram.WebApp;
-if(tg.platform === "ios"){
+if(
+  tg.platform === "ios" ||
+  tg.platform === "iphone" ||
+  tg.platform === "ios_app"
+){
   document.body.classList.add("ios");
 }
+console.log("Telegram platform:", tg.platform);
+
 
 tg.ready();
 tg.expand();
