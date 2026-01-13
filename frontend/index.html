@@ -7,189 +7,195 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:
-    linear-gradient(rgba(5,10,20,.85), rgba(5,10,20,.95)),
-    url("bg.png") center/cover no-repeat fixed;
-  color:white;
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: url("bg.png") no-repeat center center fixed;
+    background-size: cover;
+    color:white;
 }
 
-header{
-  text-align:center;
-  padding:20px;
-  font-size:30px;
-  font-weight:bold;
-  text-shadow:0 0 15px red;
+.overlay {
+    background: rgba(0,0,0,0.7);
+    min-height:100vh;
+    padding-bottom:80px;
 }
 
-.tabs{
-  display:flex;
-  justify-content:center;
-  gap:15px;
-  margin-bottom:15px;
+header {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:15px;
 }
 
-.tabs button{
-  padding:10px 20px;
-  border:none;
-  border-radius:12px;
-  background:#111;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-  box-shadow:0 0 10px rgba(255,0,0,.4);
+header img {
+    width:50px;
+    border-radius:50%;
 }
 
-.tabs button.active{
-  background:red;
-  box-shadow:0 0 20px red;
+.categories {
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:15px;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:15px;
-  padding:15px;
+.cat {
+    padding:10px 20px;
+    border-radius:20px;
+    background:#111;
+    cursor:pointer;
 }
 
-.card{
-  background:rgba(0,0,0,.75);
-  border-radius:15px;
-  overflow:hidden;
-  box-shadow:0 0 20px rgba(255,0,0,.4);
+.cat.active {
+    background:#00ffcc;
+    color:black;
 }
 
-.card img,.card video{
-  width:100%;
-  height:150px;
-  object-fit:cover;
+.grid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:15px;
+    padding:15px;
 }
 
-.card .content{
-  padding:10px;
-  text-align:center;
+.card {
+    background: rgba(0,0,0,0.8);
+    border-radius:15px;
+    padding:10px;
+    text-align:center;
+    box-shadow:0 0 10px #00ffcc;
 }
 
-.card button{
-  margin-top:8px;
-  padding:8px 12px;
-  border:none;
-  border-radius:8px;
-  background:red;
-  color:white;
-  cursor:pointer;
+.card img, .card video {
+    width:100%;
+    border-radius:10px;
 }
 
-#infoPage{
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(rgba(5,10,20,.9), rgba(5,10,20,.95)),
-    url("bg.png") center/cover no-repeat fixed;
-  display:none;
-  padding:20px;
-  overflow:auto;
+.info-btn {
+    margin-top:5px;
+    background:#00ffcc;
+    border:none;
+    padding:8px;
+    border-radius:8px;
+    width:100%;
+    cursor:pointer;
 }
 
-#infoPage button{
-  background:red;
-  border:none;
-  padding:10px 15px;
-  border-radius:10px;
-  color:white;
-  margin-bottom:15px;
+#infoPage {
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:black;
+    color:white;
+    display:none;
+    overflow:auto;
+    padding:20px;
 }
 
-audio{display:none;}
+.back {
+    background:#00ffcc;
+    color:black;
+    padding:10px;
+    border:none;
+    margin-bottom:15px;
+    border-radius:10px;
+}
 </style>
 </head>
 
 <body>
+<audio autoplay loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
-<header>🧠 LE PROFESSEUR 59-62</header>
+<div class="overlay">
+<header>
+    <img src="logo.png">
+    <h2>Le Professeur 59-62</h2>
+</header>
 
-<div class="tabs">
-  <button class="active" onclick="showCat('puff',this)">Puff</button>
-  <button onclick="showCat('stup',this)">Stup</button>
-  <button onclick="showCat('tabac',this)">Tabac</button>
+<div class="categories">
+    <div class="cat active" onclick="showCategory('puff')">PUFF</div>
+    <div class="cat" onclick="showCategory('stup')">STUP</div>
+    <div class="cat" onclick="showCategory('tabac')">TABAC</div>
 </div>
 
-<div id="cards" class="grid"></div>
+<div id="grid" class="grid"></div>
+</div>
 
 <div id="infoPage">
-  <button onclick="closeInfo()">⬅ Retour</button>
-  <div id="infoContent"></div>
+    <button class="back" onclick="closeInfo()">⬅ Retour</button>
+    <div id="infoText"></div>
 </div>
 
-<audio id="bgMusic" src="music.mp3" loop></audio>
-
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+const data = {
+ puff:[
+  {media:"img/puff1.jpg", info:"PUFF 1"},
+  {media:"img/puff2.jpg", info:"PUFF 2"},
+  {media:"img/puff3.jpg", info:"PUFF 3"},
+  {media:"img/puff4.jpg", info:"PUFF 4"},
+  {media:"img/puff5.jpg", info:"PUFF 5"},
+ ],
 
-let musicStarted=false;
-document.addEventListener("click",()=>{
-  if(!musicStarted){
-    document.getElementById("bgMusic").play();
-    musicStarted=true;
-  }
-});
+ stup:[
+  {media:"videos/stup1.mp4", info:`🟣 FRESH FROZEN WHOLE PLANT 🟣`},
+  {media:"videos/stup2.mp4", info:`🍯 LIVE ROSIN PUR 🍯`},
+  {media:"videos/stup3.mp4", info:"STUP 3"},
+  {media:"videos/stup4.mp4", info:"STUP 4"},
+  {media:"videos/stup5.mp4", info:"STUP 5"},
+  {media:"videos/stup6.mp4", info:"STUP 6"},
+  {media:"videos/stup7.mp4", info:"STUP 7"},
+  {media:"videos/stup9.mp4", info:"STUP 9"},
+  {media:"videos/stup10.mp4", info:"PIATELLA USA"},
+  {media:"videos/stup12.mp4", info:"STUP 12"},
+  {media:"videos/stup13.mp4", info:"STUP 13"},
+  {media:"videos/stup14.mp4", info:"STATICSIFT"},
+  {media:"videos/stup17.mp4", info:"STUP 17"},
+ ],
 
-const products = {
-  puff:[
-    {name:"Puff 1",img:"img/puff1.jpg",desc:"Saveur fruit rouge."},
-    {name:"Puff 2",img:"img/puff2.jpg",desc:"Saveur mangue."},
-    {name:"Puff 3",img:"img/puff3.jpg",desc:"Saveur fraise."},
-    {name:"Puff 4",img:"img/puff4.jpg",desc:"Saveur cola."},
-    {name:"Puff 5",img:"img/puff5.jpg",desc:"Saveur ice."}
-  ],
-  stup:[
-    {name:"Stup 1",video:"videos/s1.mp4",desc:"Fresh Frozen Whole Plant."},
-    {name:"Stup 2",video:"videos/s2.mp4",desc:"Live Rosin Premium."},
-    {name:"Stup 3",video:"videos/s3.mp4",desc:"Gold Extract."},
-    {name:"Stup 4",video:"videos/s4.mp4",desc:"Cali Premium."},
-    {name:"Stup 5",video:"videos/s5.mp4",desc:"Static Sift."}
-  ],
-  tabac:[
-    {name:"Tabac",video:"videos/tabac.mp4",desc:"Tabac premium."}
-  ]
+ tabac:[
+  {media:"videos/tabac1.mp4", info:"TABAC"}
+ ]
 };
 
 let current="puff";
 
-function showCat(cat,btn){
-  current=cat;
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  render();
+function showCategory(cat){
+    current=cat;
+    document.querySelectorAll(".cat").forEach(c=>c.classList.remove("active"));
+    event.target.classList.add("active");
+    render();
 }
 
 function render(){
-  const c=document.getElementById("cards");
-  c.innerHTML="";
-  products[current].forEach(p=>{
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
-      ${p.img?`<img src="${p.img}">`:`<video src="${p.video}" muted loop autoplay></video>`}
-      <div class="content">
-        <b>${p.name}</b>
-        <button onclick="showInfo(\`${p.desc}\`)">Info</button>
-      </div>
-    `;
-    c.appendChild(div);
-  });
+    const grid=document.getElementById("grid");
+    grid.innerHTML="";
+    data[current].forEach(item=>{
+        let card=document.createElement("div");
+        card.className="card";
+
+        if(item.media.endsWith(".mp4")){
+            card.innerHTML=`<video src="${item.media}" autoplay loop muted></video>`;
+        } else {
+            card.innerHTML=`<img src="${item.media}">`;
+        }
+
+        card.innerHTML+=`<button class="info-btn" onclick="openInfo(\`${item.info}\`)">ℹ Info</button>`;
+        grid.appendChild(card);
+    });
 }
 
-function showInfo(text){
-  document.getElementById("infoContent").innerText=text;
-  document.getElementById("infoPage").style.display="block";
+function openInfo(txt){
+    document.getElementById("infoPage").style.display="block";
+    document.getElementById("infoText").innerText=txt;
 }
 
 function closeInfo(){
-  document.getElementById("infoPage").style.display="none";
+    document.getElementById("infoPage").style.display="none";
 }
 
 render();
