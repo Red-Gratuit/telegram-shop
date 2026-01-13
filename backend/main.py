@@ -11,7 +11,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://xr-mini-app.pages.dev", "https://t.me"],
+    allow_origins=["https://telegram-shop-93m.pages.dev", "https://t.me"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
