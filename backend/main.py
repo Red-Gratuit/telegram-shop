@@ -61,7 +61,7 @@ products = [
 # 8,11,15,16 supprimés
 # --------------------
 stup_descriptions = {
-    1:  1: """🟣 FRESH FROZEN WHOLE PLANT 🟣
+    1: """🟣 FRESH FROZEN WHOLE PLANT 🟣
 
 ✅ VARIÉTÉS
 • PURPLE MOLT’S 🧬
@@ -76,7 +76,7 @@ QUANTITÉS DISPO :
 
 ⭕️ PRIX EN PV ⭕️
 """,
-    2:  2: """🇺🇸 🍯 LIVE ROSIN PUR 🍯 🇺🇸
+    2: """🇺🇸 🍯 LIVE ROSIN PUR 🍯 🇺🇸
 
 ✅ VARIÉTÉS
 • LEMON 🍋
@@ -97,7 +97,7 @@ QUANTITÉS DISPO :
 """,
     3: "Stup 3 – Plus puissant, montée rapide.",
     4: "Stup 4 – Effet long et profond.",
-    5:  """🇺🇸 CALI US PREMIUM SHELF 🇺🇸
+    5: """🇺🇸 CALI US PREMIUM SHELF 🇺🇸
 
 ✅ VARIÉTÉS
 • GELATO 33 🍦
@@ -126,7 +126,7 @@ QUANTITÉS DISPO :
 """,
     12: "Stup 12 – Très fort.",
     13: "Stup 13 – Effet stable.",
-    14:  """🍫 STATICSIFT 🍫
+    14: """🍫 STATICSIFT 🍫
 
 ✅ VARIÉTÉS
 • PINEAPPLE 🍍
