@@ -150,11 +150,6 @@ header img{
   color:#dbeafe;
 }
 
-/* iPhone Telegram boost */
-body.ios {
-  zoom: 1.15;
-}
-
 body.ios .card button,
 body.ios .infoBtn {
   padding: 14px !important;
@@ -169,10 +164,6 @@ body.ios .price {
 body.ios .cat {
   padding: 12px 22px !important;
   font-size: 15px !important;
-}
-/* ===== TELEGRAM iOS APP MODE ===== */
-body.ios .products{
-  grid-template-columns: 1fr !important;
 }
 
 body.ios .card{
@@ -217,12 +208,6 @@ body.ios .cart button{
   padding: 18px !important;
   border-radius: 20px !important;
   width: 100% !important;
-}
-/* ================================
-   iOS PRO APP MODE (CaliFastDrive)
-================================ */
-body.ios .categories{
-  display:none;
 }
 
 body.ios .products{
@@ -297,11 +282,6 @@ body.ios .bottomBar{
   font-weight:bold;
   font-size:16px;
 }
-/* ===== iOS PRO MODE ===== */
-body.ios .products{
-  grid-template-columns: 1fr 1fr !important;
-  padding-bottom: 120px; /* place pour la bottom bar */
-}
 
 body.ios .card{
   border-radius: 22px !important;
@@ -358,6 +338,39 @@ body.ios .bottomBar button{
   border-radius:999px;
   font-weight:bold;
   font-size:18px;
+}
+/* ===== TELEGRAM iOS PRO (OPTIMIZED) ===== */
+body.ios .products{
+  grid-template-columns:1fr 1fr !important;
+}
+
+body.ios .card{
+  padding:16px !important;
+  border-radius:22px !important;
+}
+
+body.ios .card h3{
+  font-size:18px !important;
+}
+
+body.ios .price{
+  font-size:20px !important;
+}
+
+body.ios .card button{
+  padding:14px !important;
+  font-size:16px !important;
+  border-radius:14px !important;
+  width:100% !important;
+}
+
+body.ios .infoBtn{
+  background:#0ea5e9 !important;
+}
+
+body.ios .cat{
+  padding:14px 24px !important;
+  font-size:16px !important;
 }
 
 </style>
@@ -439,13 +452,13 @@ async function load(){
   renderProducts(prods);
 }
 
-function renderCats(cats){
-  const div=document.getElementById("categories");
-  div.innerHTML='<div class="cat active" onclick="filter(null,this)">Tous</div>';
-  cats.forEach(c=>{
-    div.innerHTML+=`<div class="cat" onclick="filter('${c}',this)">${c}</div>`;
-  });
-}
+const div=document.getElementById("categories");
+div.innerHTML='<div class="cat active" onclick="filter(null,this)">Tous</div>';
+cats.forEach(c=>{
+  div.innerHTML+=`<div class="cat" onclick="filter('${c}',this)">${c}</div>`;
+});
+div.innerHTML+=`<div class="cat" onclick="openInfo({name:'XR Shop',description:'Livraison rapide\\nSupport 24/7\\nPaiement sécurisé'})">Info</div>`;
+
 
 function filter(cat,el){
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
@@ -503,13 +516,9 @@ waitTelegramReady().then(load);
 <div class="bottomBar">
   <button onclick="filter(null,this)">Menu</button>
   <button onclick="filter('Stup',this)">Stup</button>
-  <button class="big" onclick="checkout()">Commander</button>
+
   <button onclick="filter('Puff',this)">Puff</button>
   <button onclick="filter('Tabac',this)">Tabac</button>
-</div>
-<div class="bottomBar">
-  <div class="total">Total: <span id="total2">0.00</span>€</div>
-  <button onclick="checkout()">Commander</button>
 </div>
 
 </body>
