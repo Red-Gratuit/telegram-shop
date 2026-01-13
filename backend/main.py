@@ -43,19 +43,24 @@ def verify_telegram(init_data: str):
 
 @app.middleware("http")
 async def telegram_auth(request: Request, call_next):
+    # On protège seulement les endpoints produits
     if request.url.path.startswith("/api"):
+        # iOS Safari ne passe pas toujours les headers
         init_data = request.headers.get("x-telegram-init-data")
 
-        # iOS envoie parfois la 1ère requête sans initData → on laisse passer
-        if not init_data:
+        # Si l'appel vient de Telegram WebApp, on autorise
+        if request.headers.get("origin", "").startswith("https://telegram-shop-93m.pages.dev"):
             return await call_next(request)
 
-        if not verify_telegram(init_data):
-            raise HTTPException(status_code=403, detail="Unauthorized Telegram")
+        # Sinon on vérifie la signature Telegram
+        if init_data and verify_telegram(init_data):
+            return await call_next(request)
+
+        # Sinon on bloque
+        raise HTTPException(status_code=403, detail="Unauthorized Telegram")
 
     return await call_next(request)
-
-
+    
 # ============================
 # PRODUCTS (TES DONNÉES EXACTES)
 # ============================
