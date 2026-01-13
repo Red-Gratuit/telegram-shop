@@ -1,133 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Le Professeur 59-62</title>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-*{box-sizing:border-box;font-family:Arial;}
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0f172a,#020617);
+  font-family:Arial, Helvetica, sans-serif;
+  background:
+    linear-gradient(rgba(5,10,20,.85), rgba(5,10,20,.95)),
+    url("bg.png") center/cover no-repeat fixed;
   color:white;
 }
-header{text-align:center;padding:20px;}
-header img{width:110px;border-radius:50%;box-shadow:0 0 20px #2ea6ff;}
 
-.categories{display:flex;gap:10px;padding:10px;overflow-x:auto;}
-.cat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:8px 18px;border-radius:30px;cursor:pointer;}
-.cat.active{background:#2ea6ff;box-shadow:0 0 15px #2ea6ff;}
-
-.products{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:15px;}
-.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:15px;}
-.price{color:#2ea6ff;font-size:20px;margin:10px 0;}
-.card button{width:100%;margin-top:6px;background:#2ea6ff;border:none;border-radius:10px;padding:10px;font-weight:bold;}
-
-.cart{position:fixed;bottom:0;left:0;right:0;background:#020617;padding:15px;display:flex;justify-content:space-between;}
-
-.infoBtn{background:#1e293b;color:white;}
-
-/* === INFO PAGE === */
-.overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.85);
-  backdrop-filter:blur(10px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
+header{
+  text-align:center;
+  padding:20px;
+  font-size:30px;
+  font-weight:bold;
+  text-shadow:0 0 15px red;
 }
-.panel{
-  background:#020617;
-  width:90%;
-  max-height:85%;
-  border-radius:20px;
+
+.tabs{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-bottom:15px;
+}
+
+.tabs button{
+  padding:10px 20px;
+  border:none;
+  border-radius:12px;
+  background:#111;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 0 10px rgba(255,0,0,.4);
+}
+
+.tabs button.active{
+  background:red;
+  box-shadow:0 0 20px red;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  padding:15px;
+}
+
+.card{
+  background:rgba(0,0,0,.75);
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 0 20px rgba(255,0,0,.4);
+}
+
+.card img,.card video{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+
+.card .content{
+  padding:10px;
+  text-align:center;
+}
+
+.card button{
+  margin-top:8px;
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  background:red;
+  color:white;
+  cursor:pointer;
+}
+
+#infoPage{
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(5,10,20,.9), rgba(5,10,20,.95)),
+    url("bg.png") center/cover no-repeat fixed;
+  display:none;
   padding:20px;
   overflow:auto;
-  box-shadow:0 0 40px #2ea6ff;
 }
-.panel h2{color:#2ea6ff;}
-.close{background:#2ea6ff;border:none;border-radius:10px;padding:8px 14px;}
-.infoText{white-space:pre-line;line-height:1.6;}
+
+#infoPage button{
+  background:red;
+  border:none;
+  padding:10px 15px;
+  border-radius:10px;
+  color:white;
+  margin-bottom:15px;
+}
+
+audio{display:none;}
 </style>
 </head>
 
 <body>
 
-<header>
-  <img src="https://telegram-shop-93m.pages.dev/logo.png">
-</header>
+<header>🧠 LE PROFESSEUR 59-62</header>
 
-<div class="categories" id="categories"></div>
-<div class="products" id="products"></div>
-
-<div class="cart">
-  <div>Total: <span id="total">0.00</span>€</div>
-  <button onclick="checkout()">Commander</button>
+<div class="tabs">
+  <button class="active" onclick="showCat('puff',this)">Puff</button>
+  <button onclick="showCat('stup',this)">Stup</button>
+  <button onclick="showCat('tabac',this)">Tabac</button>
 </div>
 
-<!-- INFO PAGE -->
-<div class="overlay" id="overlay">
-  <div class="panel">
-    <button class="close" onclick="closeInfo()">← Retour</button>
-    <h2 id="infoTitle"></h2>
-    <div id="infoText" class="infoText"></div>
-  </div>
+<div id="cards" class="grid"></div>
+
+<div id="infoPage">
+  <button onclick="closeInfo()">⬅ Retour</button>
+  <div id="infoContent"></div>
 </div>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
 
 <script>
-const api="https://telegram-shop-production.up.railway.app";
-let allProducts=[], cart=[], total=0;
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-async function load(){
-  const cats=await fetch(api+"/api/categories").then(r=>r.json());
-  const prods=await fetch(api+"/api/products").then(r=>r.json());
-  allProducts=prods;
-  renderCats(cats);
-  renderProducts(prods);
+let musicStarted=false;
+document.addEventListener("click",()=>{
+  if(!musicStarted){
+    document.getElementById("bgMusic").play();
+    musicStarted=true;
+  }
+});
+
+const products = {
+  puff:[
+    {name:"Puff 1",img:"img/puff1.jpg",desc:"Saveur fruit rouge."},
+    {name:"Puff 2",img:"img/puff2.jpg",desc:"Saveur mangue."},
+    {name:"Puff 3",img:"img/puff3.jpg",desc:"Saveur fraise."},
+    {name:"Puff 4",img:"img/puff4.jpg",desc:"Saveur cola."},
+    {name:"Puff 5",img:"img/puff5.jpg",desc:"Saveur ice."}
+  ],
+  stup:[
+    {name:"Stup 1",video:"videos/s1.mp4",desc:"Fresh Frozen Whole Plant."},
+    {name:"Stup 2",video:"videos/s2.mp4",desc:"Live Rosin Premium."},
+    {name:"Stup 3",video:"videos/s3.mp4",desc:"Gold Extract."},
+    {name:"Stup 4",video:"videos/s4.mp4",desc:"Cali Premium."},
+    {name:"Stup 5",video:"videos/s5.mp4",desc:"Static Sift."}
+  ],
+  tabac:[
+    {name:"Tabac",video:"videos/tabac.mp4",desc:"Tabac premium."}
+  ]
+};
+
+let current="puff";
+
+function showCat(cat,btn){
+  current=cat;
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
 }
 
-function renderCats(cats){
-  const div=document.getElementById("categories");
-  div.innerHTML='<div class="cat active" onclick="filter(null,this)">Tous</div>';
-  cats.forEach(c=>div.innerHTML+=`<div class="cat" onclick="filter('${c}',this)">${c}</div>`);
-}
-
-function filter(cat,el){
-  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
-  el.classList.add("active");
-  renderProducts(cat?allProducts.filter(p=>p.category==cat):allProducts);
-}
-
-function renderProducts(list){
-  const div=document.getElementById("products");
-  div.innerHTML="";
-  list.forEach(p=>{
-    const media=p.video?`<video src="${p.video}" autoplay loop muted playsinline style="width:100%;border-radius:12px;"></video>`
-                       :`<img src="${p.image}" style="width:100%;border-radius:12px;">`;
-    div.innerHTML+=`
-      <div class="card">
-        ${media}
-        <h3>${p.name}</h3>
-        <div class="price">${p.price}€</div>
-        <button onclick="add('${p.name}',${p.price})">Ajouter</button>
-        <button class="infoBtn" onclick='openInfo(${JSON.stringify(p)})'>Info</button>
-      </div>`;
+function render(){
+  const c=document.getElementById("cards");
+  c.innerHTML="";
+  products[current].forEach(p=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      ${p.img?`<img src="${p.img}">`:`<video src="${p.video}" muted loop autoplay></video>`}
+      <div class="content">
+        <b>${p.name}</b>
+        <button onclick="showInfo(\`${p.desc}\`)">Info</button>
+      </div>
+    `;
+    c.appendChild(div);
   });
 }
 
-function add(n,p){cart.push({n,p});total+=p;document.getElementById("total").innerText=total.toFixed(2);}
-function checkout(){alert("Total "+total+"€");}
-
-function openInfo(p){
-  document.getElementById("infoTitle").innerText=p.name;
-  document.getElementById("infoText").innerHTML=(p.description||"").replace(/\n/g,"<br>");
-  document.getElementById("overlay").style.display="flex";
+function showInfo(text){
+  document.getElementById("infoContent").innerText=text;
+  document.getElementById("infoPage").style.display="block";
 }
-function closeInfo(){document.getElementById("overlay").style.display="none";}
 
-load();
+function closeInfo(){
+  document.getElementById("infoPage").style.display="none";
+}
+
+render();
 </script>
+
 </body>
 </html>
