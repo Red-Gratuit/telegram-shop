@@ -297,6 +297,68 @@ body.ios .bottomBar{
   font-weight:bold;
   font-size:16px;
 }
+/* ===== iOS PRO MODE ===== */
+body.ios .products{
+  grid-template-columns: 1fr 1fr !important;
+  padding-bottom: 120px; /* place pour la bottom bar */
+}
+
+body.ios .card{
+  border-radius: 22px !important;
+  padding: 18px !important;
+}
+
+body.ios .card h3{
+  font-size: 18px !important;
+}
+
+body.ios .price{
+  font-size: 20px !important;
+}
+
+body.ios .card button{
+  padding: 14px !important;
+  font-size: 16px !important;
+  border-radius: 14px !important;
+}
+
+body.ios .infoBtn{
+  font-size: 14px !important;
+}
+
+/* ===== Bottom Encadrement ===== */
+.bottomBar{
+  display:none;
+}
+
+body.ios .bottomBar{
+  display:flex;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:90px;
+  background:linear-gradient(180deg,#020617,#000);
+  border-top:2px solid rgba(255,255,255,.1);
+  z-index:50;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 16px;
+}
+
+body.ios .bottomBar .total{
+  font-size:20px;
+  color:white;
+}
+
+body.ios .bottomBar button{
+  background:linear-gradient(45deg,#00e676,#1aff00);
+  border:none;
+  padding:16px 26px;
+  border-radius:999px;
+  font-weight:bold;
+  font-size:18px;
+}
 
 </style>
 </head>
@@ -415,7 +477,9 @@ function renderProducts(list){
 function add(name,price){
   cart.push({name,price});
   total+=price;
-  document.getElementById("total").innerText=total.toFixed(2);
+ document.getElementById("total").innerText=total.toFixed(2);
+const t2=document.getElementById("total2");
+if(t2) t2.innerText=total.toFixed(2);
   tg.HapticFeedback.impactOccurred("medium");
 }
 
@@ -442,6 +506,10 @@ waitTelegramReady().then(load);
   <button class="big" onclick="checkout()">Commander</button>
   <button onclick="filter('Puff',this)">Puff</button>
   <button onclick="filter('Tabac',this)">Tabac</button>
+</div>
+<div class="bottomBar">
+  <div class="total">Total: <span id="total2">0.00</span>€</div>
+  <button onclick="checkout()">Commander</button>
 </div>
 
 </body>
