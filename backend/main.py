@@ -1,14 +1,58 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import hashlib
+import hmac
+from urllib.parse import parse_qs
+
+BOT_TOKEN = "PUT_YOUR_TELEGRAM_BOT_TOKEN_HERE"
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://xr-mini-app.pages.dev", "https://t.me"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ============================
+# 🔐 TELEGRAM AUTH
+# ============================
+def verify_telegram(init_data: str):
+    parsed = parse_qs(init_data)
+
+    if "hash" not in parsed:
+        return False
+
+    received_hash = parsed.pop("hash")[0]
+
+    data_check_string = "\n".join(
+        f"{k}={v[0]}" for k, v in sorted(parsed.items())
+    )
+
+    secret_key = hashlib.sha256(BOT_TOKEN.encode()).digest()
+    calculated_hash = hmac.new(
+        secret_key,
+        data_check_string.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    return calculated_hash == received_hash
+
+
+@app.middleware("http")
+async def telegram_auth(request: Request, call_next):
+    if request.url.path.startswith("/api"):
+        init_data = request.headers.get("x-telegram-init-data")
+
+        if not init_data or not verify_telegram(init_data):
+            raise HTTPException(status_code=403, detail="Unauthorized Telegram")
+
+    return await call_next(request)
+
+# ============================
+# PRODUCTS (TES DONNÉES EXACTES)
+# ============================
 
 products = [
     # --------------------
@@ -99,40 +143,45 @@ QUANTITÉS DISPO :
     4: "Stup 4 – Effet long et profond.",
     5: """🇺🇸 CALI US PREMIUM SHELF 🇺🇸
 
+✅ VARIÉTÉS
 • GELATO 33 🍦
 
-Une variété premium aux notes sucrées et boisées.
-Un vrai plaisir pour les connaisseurs.
+🔥 Une cali unique et spectaculaire.
+La GELATO 33 est un mélange de bonbon et de notes boisées.
+Un vrai régal pour les papilles.
 
-DISPONIBLE :
-10G 🇺🇸 25G 🇺🇸 50G 🇺🇸 100G 🇺🇸 200G 🇺🇸 500G 🇺🇸 1K
+DISPO :
+10G 🇺🇸 25G 🇺🇸 50G 🇺🇸 100G 🇺🇸 200G 🇺🇸 500G 🇺🇸 1K + PV
 
-⭕️ PRIX SUR DEMANDE ⭕️
+⭕️ PRIX EN PV ⭕️
 """,
     6: "Stup 6 – Mélange spécial.",
     7: "Stup 7 – Version intense.",
     9: "Stup 9 – Ultra premium.",
     10: """🇺🇸 🍯 PIATELLA UNCLE’S FARM 🍯 🇺🇸
 
+🇺🇸 De la folie à tous les niveaux.
 Ce PIATELLA importé tout droit des USA vous fera voyager.
 
-DISPONIBLE :
+QUANTITÉS DISPO :
 1G 🍯 3G 🍯 5G 🍯 10G 🍯 25G 🍯 50G 🍯 100G 🍯
 
-⭕️ PRIX SUR DEMANDE ⭕️
+⭕️ PRIX EN PV ⭕️
 """,
     12: "Stup 12 – Très fort.",
     13: "Stup 13 – Effet stable.",
     14: """🍫 STATICSIFT 🍫
 
+✅ VARIÉTÉS
 • PINEAPPLE 🍍
 
-Terps bien développés, texture glassy, qualité premium.
+🔥 Un STATICSIFT de folie.
+Terps bien développés, encore glassy, du très lourd.
 
-DISPONIBLE :
-10G 🍍 25G 🍍 50G 🍍 100G 🍍 200G 🍍 500G 🍍 1K 🍍
+QUANTITÉS DISPO :
+10G 🍍 25G 🍍 50G 🍍 100G 🍍 200G 🍍 500G 🍍 1K 🍍 +PV
 
-⭕️ PRIX SUR DEMANDE ⭕️
+⭕️ PRIX EN PV ⭕️
 """,
     17: "Stup 17 – Version ultime."
 }
@@ -148,7 +197,7 @@ for i, desc in stup_descriptions.items():
     })
 
 # --------------------
-# TABAC (1 vidéo)
+# TABAC
 # --------------------
 products.append({
     "id": 300,
@@ -159,9 +208,9 @@ products.append({
     "description": "Tabac blond classique, goût doux."
 })
 
-# --------------------
+# ============================
 # API
-# --------------------
+# ============================
 @app.get("/api/ping")
 def ping():
     return {"status": "connected"}

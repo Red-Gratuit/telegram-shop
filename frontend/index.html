@@ -101,37 +101,7 @@ header img{
   cursor:pointer;
 }
 
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  backdrop-filter:blur(10px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:10;
-}
-
-.panel{
-  background:#0b0f14;
-  border-radius:18px;
-  padding:20px;
-  width:90%;
-  max-height:80%;
-  overflow:auto;
-  box-shadow:0 0 40px #2ea6ff;
-}
-
-.close{
-  float:right;
-  background:#2ea6ff;
-  border:none;
-  border-radius:8px;
-  padding:8px 12px;
-  cursor:pointer;
-}
-
-/* === INFO PAGE PREMIUM === */
+/* === OVERLAY / INFO PAGE PREMIUM === */
 .overlay{
   position:fixed;
   inset:0;
@@ -181,20 +151,6 @@ header img{
 }
 </style>
 </head>
-<div class="overlay" id="overlay">
-  <div class="panel">
-    <button class="close" onclick="closeInfo()">Fermer</button>
-    <h2 id="infoTitle"></h2>
-    <p id="infoText"></p>
-  </div>
-</div>
-<div class="overlay" id="overlay">
-  <div class="panel">
-    <button class="close" onclick="closeInfo()">← Retour</button>
-    <h2 id="infoTitle"></h2>
-    <div id="infoText" class="infoText"></div>
-  </div>
-</div>
 
 <body>
 
@@ -210,15 +166,43 @@ header img{
   <button onclick="checkout()">Commander</button>
 </div>
 
+<!-- ✅ UN SEUL overlay (ID unique) -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <button class="close" onclick="closeInfo()">← Retour</button>
+    <h2 id="infoTitle"></h2>
+    <div id="infoText" class="infoText"></div>
+  </div>
+</div>
+
 <script>
-const api="https://telegram-shop-production.up.railway.app";
+/* ===============================
+   TELEGRAM iOS SAFE INIT
+================================ */
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+tg.enableClosingConfirmation();
+
+/* ===============================
+   API
+================================ */
+const api="https://web-production-94ef0.up.railway.app"; // ton backend Railway
+const initData = tg.initData;
+
 let allProducts=[];
 let cart=[];
 let total=0;
 
 async function load(){
-  const cats=await fetch(api+"/api/categories").then(r=>r.json());
-  const prods=await fetch(api+"/api/products").then(r=>r.json());
+  const cats = await fetch(api+"/api/categories", {
+    headers:{ "x-telegram-init-data": initData }
+  }).then(r=>r.json());
+
+  const prods = await fetch(api+"/api/products", {
+    headers:{ "x-telegram-init-data": initData }
+  }).then(r=>r.json());
+
   allProducts=prods;
   renderCats(cats);
   renderProducts(prods);
@@ -263,7 +247,7 @@ function add(name,price){
   cart.push({name,price});
   total+=price;
   document.getElementById("total").innerText=total.toFixed(2);
-  Telegram.WebApp.HapticFeedback.impactOccurred("medium");
+  tg.HapticFeedback.impactOccurred("medium");
 }
 
 function checkout(){
@@ -272,13 +256,8 @@ function checkout(){
 
 function openInfo(p){
   document.getElementById("infoTitle").innerText = p.name;
-
-  // Convertir les retours à la ligne en <br>
-  const text = (p.description || "Aucune description.")
-                .replace(/\n/g, "<br>");
-
+  const text = (p.description || "Aucune description.").replace(/\n/g, "<br>");
   document.getElementById("infoText").innerHTML = text;
-
   document.getElementById("overlay").style.display = "flex";
 }
 
